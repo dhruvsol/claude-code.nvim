@@ -6,7 +6,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/greggh/claude-code.nvim/ci.yml?branch=main&style=flat-square&logo=github)](https://github.com/greggh/claude-code.nvim/actions/workflows/ci.yml)
 [![Neovim Version](https://img.shields.io/badge/Neovim-0.7%2B-blueviolet?style=flat-square&logo=neovim)](https://github.com/neovim/neovim)
 [![Tests](https://img.shields.io/badge/Tests-44%20passing-success?style=flat-square&logo=github-actions)](https://github.com/greggh/claude-code.nvim/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/Version-0.4.2-blue?style=flat-square)](https://github.com/greggh/claude-code.nvim/releases/tag/v0.4.2)
+[![Version](https://img.shields.io/badge/Version-0.5.0-blue?style=flat-square)](https://github.com/greggh/claude-code.nvim/releases/tag/v0.5.0)
 [![Discussions](https://img.shields.io/github/discussions/greggh/claude-code.nvim?style=flat-square&logo=github)](https://github.com/greggh/claude-code.nvim/discussions)
 
 *A seamless integration between [Claude Code](https://github.com/anthropics/claude-code) AI assistant and Neovim*
@@ -36,6 +36,7 @@ This plugin was built entirely with Claude Code in a Neovim terminal, and then i
 - 📋 Type annotations with LuaCATS for better IDE support
 - ✅ Configuration validation to prevent errors
 - 🧪 Testing framework for reliability (44 comprehensive tests)
+- 🔀 Multi-instance support for working on multiple git repositories simultaneously
 
 ## Requirements
 
@@ -92,11 +93,12 @@ The plugin can be configured by passing a table to the `setup` function. Here's 
 require("claude-code").setup({
   -- Terminal window settings
   window = {
-    split_ratio = 0.3,      -- Percentage of screen for the terminal window (height for horizontal, width for vertical splits)
-    position = "botright",  -- Position of the window: "botright", "topleft", "vertical", "float", etc.
-    enter_insert = true,    -- Whether to enter insert mode when opening Claude Code
-    hide_numbers = true,    -- Hide line numbers in the terminal window
-    hide_signcolumn = true, -- Hide the sign column in the terminal window
+    split_ratio = 0.3,         -- Percentage of screen for the terminal window (height for horizontal, width for vertical splits)
+    position = "botright",     -- Position of the window: "botright", "topleft", "vertical", "float", etc.
+    enter_insert = true,       -- Whether to enter insert mode when opening Claude Code
+    start_in_normal_mode = false, -- Whether to start in normal mode instead of insert mode
+    hide_numbers = true,       -- Hide line numbers in the terminal window
+    hide_signcolumn = true,    -- Hide the sign column in the terminal window
     
     -- Floating window configuration (only applies when position = "float")
     float = {
@@ -118,6 +120,7 @@ require("claude-code").setup({
   -- Git project settings
   git = {
     use_git_root = true,     -- Set CWD to git root when opening Claude Code (if in git project)
+    multi_instance = true,   -- Use multiple Claude instances (one per git root)
   },
   -- Shell-specific settings
   shell = {
@@ -190,7 +193,6 @@ Note: Commands are automatically generated for each entry in your `command_varia
 
 Default key mappings:
 
-- `<leader>ac` - Toggle Claude Code terminal window (normal mode)
 - `<C-,>` - Toggle Claude Code terminal window (both normal and terminal modes)
 
 Variant mode mappings (if configured):
@@ -231,6 +233,26 @@ require("claude-code").setup({
 })
 ```
 
+## Multi-Instance Support
+
+The plugin supports running multiple Claude Code instances, one per git repository root:
+
+- Each git repository maintains its own Claude instance
+- Works across multiple Neovim tabs with different projects
+- Allows working on multiple projects in parallel
+- Instances remain in their own directory context when switching between tabs
+- Buffer names include the git root path for easy identification
+
+To disable multi-instance mode and use a single global Claude instance:
+
+```lua
+require('claude-code').setup({
+  git = {
+    multi_instance = false
+  }
+})
+```
+
 ## How it Works
 
 This plugin:
@@ -240,6 +262,7 @@ This plugin:
 3. Automatically reloads files when they're modified by Claude Code
 4. Provides convenient keymaps and commands for toggling the terminal
 5. Automatically detects git repositories and sets working directory to the git root
+6. Supports multiple instances for working on different git repositories simultaneously
 
 ## Contributing
 
